@@ -27,14 +27,14 @@ import numpy as np
 def SplitFnames(par_fname, langs):
     fnames = []
     for l in langs:
-        fname = par_fname + '.' + l
+        fname = f'{par_fname}.{l}'
         if os.path.isfile(fname):
             fnames.append(fname)
         for i in range(1000):
-            fname = par_fname + '.' + l + '.{:03d}'.format(i)
+            fname = f'{par_fname}.{l}' + '.{:03d}'.format(i)
             if os.path.isfile(fname):
                 fnames.append(fname)
-    if len(fnames) == 0:
+    if not fnames:
         print("ERROR: no embeddings found in {:s}*".format(par_fname))
         sys.exit(1)
     return fnames
@@ -86,7 +86,7 @@ def IndexCreate(dname, idx_type,
     idx.add(x)
     if save_index:
         iname = 'TODO'
-        print(' - saving index into ' + iname)
+        print(f' - saving index into {iname}')
         faiss.write_index(idx, iname)
     return x, idx
 
@@ -238,7 +238,7 @@ def IndexTextQuery(txt_mmap, ref_mmap, idx):
         b[i] = txt_mmap[p+i]
         i += 1
 
-    return b[0:i].decode('utf-8')
+    return b[:i].decode('utf-8')
 
 
 ###############################################################################

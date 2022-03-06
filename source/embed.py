@@ -32,7 +32,7 @@ import torch.nn as nn
 assert os.environ.get('LASER'), 'Please set the enviornment variable LASER'
 LASER = os.environ['LASER']
 
-sys.path.append(LASER + '/source/lib')
+sys.path.append(f'{LASER}/source/lib')
 from text_processing import Token, BPEfastApply
 
 SPACE_NORMALIZER = re.compile("\s+")
@@ -47,7 +47,7 @@ def buffered_read(fp, buffer_size):
             yield buffer
             buffer = []
 
-    if len(buffer) > 0:
+    if buffer:
         yield buffer
 
 
@@ -299,10 +299,9 @@ def EncodeFile(encoder, inp_fname, out_fname,
                   format(os.path.basename(inp_fname) if len(inp_fname) > 0 else 'stdin',
                          os.path.basename(out_fname)))
         fin = open(inp_fname, 'r', encoding=inp_encoding, errors='surrogateescape') if len(inp_fname) > 0 else sys.stdin
-        fout = open(out_fname, mode='wb')
-        EncodeFilep(encoder, fin, fout, buffer_size=buffer_size, verbose=verbose)
-        fin.close()
-        fout.close()
+        with open(out_fname, mode='wb') as fout:
+            EncodeFilep(encoder, fin, fout, buffer_size=buffer_size, verbose=verbose)
+            fin.close()
     elif not over_write and verbose:
         print(' - Encoder: {} exists already'.format(os.path.basename(out_fname)))
 
@@ -366,12 +365,17 @@ if __name__ == '__main__':
         ifname = ''  # stdin will be used
         if args.token_lang != '--':
             tok_fname = os.path.join(tmpdir, 'tok')
-            Token(ifname,
-                  tok_fname,
-                  lang=args.token_lang,
-                  romanize=True if args.token_lang == 'el' else False,
-                  lower_case=True, gzip=False,
-                  verbose=args.verbose, over_write=False)
+            Token(
+                ifname,
+                tok_fname,
+                lang=args.token_lang,
+                romanize=args.token_lang == 'el',
+                lower_case=True,
+                gzip=False,
+                verbose=args.verbose,
+                over_write=False,
+            )
+
             ifname = tok_fname
 
         if args.bpe_codes:
