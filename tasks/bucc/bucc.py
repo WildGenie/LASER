@@ -82,9 +82,9 @@ if args.verbose:
 src_sent2id, trg_sent2id = {}, {}
 for lang, sent2id in (args.src_lang, src_sent2id), (args.trg_lang, trg_sent2id):
     repeated = set()
-    with open(args.bucc_texts + '.' + lang, encoding=args.encoding, errors='surrogateescape') as f:
+    with open(f'{args.bucc_texts}.{lang}', encoding=args.encoding, errors='surrogateescape') as f:
         sentences = [line.strip() for line in f]
-    with open(args.bucc_ids + '.' + lang, encoding=args.encoding, errors='surrogateescape') as f:
+    with open(f'{args.bucc_ids}.{lang}', encoding=args.encoding, errors='surrogateescape') as f:
         ids = [line.strip() for line in f]
     for id, sent in zip(ids, sentences):
         if sent in sent2id:
